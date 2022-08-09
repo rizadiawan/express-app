@@ -1,10 +1,9 @@
 {
-  "executionRoleArn": "%EXECUTION_ROLE_ARN%",
+  "executionRoleArn": "arn:aws:iam::620583337209:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
       "logConfiguration": {
         "logDriver": "awslogs",
-        "secretOptions": null,
         "options": {
           "awslogs-group": "/ecs/express-app",
           "awslogs-region": "ap-southeast-3",
@@ -18,7 +17,7 @@
           "containerPort": 3000
         }
       ],
-      "environment": [
+      "secrets": [
         {
           "name": "DATABASE_DEV_URL",
           "valueFrom": "DATABASE_DEV_URL"
