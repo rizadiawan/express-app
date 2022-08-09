@@ -1,0 +1,35 @@
+{
+  "executionRoleArn": "%EXECUTION_ROLE_ARN%",
+  "containerDefinitions": [
+    {
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+          "awslogs-group": "/ecs/express-app",
+          "awslogs-region": "ap-southeast-3",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "containerPort": 3000
+        }
+      ],
+      "environment": [
+        {
+          "name": "DATABASE_DEV_URL",
+          "valueFrom": "DATABASE_DEV_URL"
+        }
+      ],
+      "essential": true,
+      "name": "express-app"
+    }
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "networkMode": "awsvpc",
+  "family": "express-app"
+}

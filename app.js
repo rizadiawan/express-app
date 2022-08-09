@@ -4,10 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 
-// router import
-const item = require('./routes/item');
 const app = express();
-
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -15,7 +12,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // Routing
-app.use('/api', item);
+const api = require('./routes/api');
+app.use('/api', api);
 
 
 // simple route

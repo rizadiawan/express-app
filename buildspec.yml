@@ -1,0 +1,43 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REPO
+  build:
+    commands:
+      - echo Build started on `date`
+      - IMAGE_TAG=latest
+      
+      # 1. Push Docker image to ECR
+      - echo "Building the Docker image..."    
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_REPO/$IMAGE_REPO_NAME:$IMAGE_TAG     
+      - echo "Pushing the Docker image..."
+      - docker push $ECR_REPO/$IMAGE_REPO_NAME:$IMAGE_TAG 
+      - echo "Image pushed"
+      
+      # 2. Create a new task definition
+      - echo "Creating new task definition version...""
+      - sed -i "s;%EXECUTION_ROLE_ARN%;$EXECUTION_ROLE_ARN;g" task-definition.json
+      - aws ecs register-task-definition --family $TASK_FAMILY --cli-input-json file://task-definition.json
+      - TASK_REVISION=`aws ecs describe-task-definition --task-definition $TASK_FAMILY | jq -r ".taskDefinition.revision"
+      - echo "Created new task definition revision $TASK_REVISION"
+      
+      # 3. Update the service
+      - echo "Updating service...""
+      - DESIRED_COUNT=`aws ecs describe-services --services $SERVICE_NAME --cluster $CLUSTER_NAME | jq -r ".services[0].desiredCount"
+      - >
+        aws ecs update-service 
+        --cluster $CLUSTER_NAME
+        --service $SERVICE_NAME 
+        --task-definition $TASK_FAMILY:$TASK_REVISION
+        --desired-count $DESIRED_COUNT 
+        --deployment-configuration "maximumPercent=200,minimumHealthyPercent=100,deploymentCircuitBreaker={enable=true,rollback=true}"
+        --force-new-deployment
+      - echo "Service updated"
+      
+  post_build:
+    commands:
+      - echo Build completed on `date`
