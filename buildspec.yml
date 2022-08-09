@@ -19,14 +19,14 @@ phases:
       - echo "Image pushed"
       
       # 2. Create a new task definition
-      - echo "Creating new task definition version...""
+      - echo "Creating new task definition version..."
       - sed -i "s;%EXECUTION_ROLE_ARN%;$EXECUTION_ROLE_ARN;g" task-definition.json
       - aws ecs register-task-definition --family $TASK_FAMILY --cli-input-json file://task-definition.json
       - TASK_REVISION=`aws ecs describe-task-definition --task-definition $TASK_FAMILY | jq -r ".taskDefinition.revision"
       - echo "Created new task definition revision $TASK_REVISION"
       
       # 3. Update the service
-      - echo "Updating service...""
+      - echo "Updating service..."
       - DESIRED_COUNT=`aws ecs describe-services --services $SERVICE_NAME --cluster $CLUSTER_NAME | jq -r ".services[0].desiredCount"
       - >
         aws ecs update-service 
