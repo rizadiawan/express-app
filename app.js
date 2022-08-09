@@ -3,7 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-intentionally creating bug here
+// uncomment here to intentionally create bug
 
 const app = express();
 
