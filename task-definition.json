@@ -1,7 +1,8 @@
 {
-  "executionRoleArn": "arn:aws:iam::620583337209:role/ecsTaskExecutionRole",
+  "executionRoleArn": "%EXECUTION_ROLE_ARN%",
   "containerDefinitions": [
     {
+      "image": "%ECR_REPO%/%IMAGE_REPO_NAME%:%IMAGE_TAG%",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {

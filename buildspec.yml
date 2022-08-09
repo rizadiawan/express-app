@@ -20,7 +20,7 @@ phases:
       
       # 2. Create a new task definition
       - echo "Creating new task definition version..."
-      - sed -i "s;%EXECUTION_ROLE_ARN%;$EXECUTION_ROLE_ARN;g" task-definition.json
+      - sed -i -e "s;%EXECUTION_ROLE_ARN%;$EXECUTION_ROLE_ARN;g" -e "s;%ECR_REPO%;$ECR_REPO;g" -e "s;%IMAGE_REPO_NAME%;$IMAGE_REPO_NAME;g" -e "s;%IMAGE_TAG%;$IMAGE_TAG;g" task-definition.json
       - aws ecs register-task-definition --family $TASK_FAMILY --cli-input-json file://task-definition.json
       - TASK_REVISION=`aws ecs describe-task-definition --task-definition $TASK_FAMILY | jq -r ".taskDefinition.revision"
       - echo "Created new task definition revision $TASK_REVISION"
