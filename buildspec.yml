@@ -22,12 +22,12 @@ phases:
       - echo "Creating new task definition version..."
       - sed -i -e "s;%EXECUTION_ROLE_ARN%;$EXECUTION_ROLE_ARN;g" -e "s;%ECR_REPO%;$ECR_REPO;g" -e "s;%IMAGE_REPO_NAME%;$IMAGE_REPO_NAME;g" -e "s;%IMAGE_TAG%;$IMAGE_TAG;g" task-definition.json
       - aws ecs register-task-definition --family $TASK_FAMILY --cli-input-json file://task-definition.json
-      - TASK_REVISION=`aws ecs describe-task-definition --task-definition $TASK_FAMILY | jq -r ".taskDefinition.revision"
+      - TASK_REVISION=`aws ecs describe-task-definition --task-definition $TASK_FAMILY | jq -r ".taskDefinition.revision"`
       - echo "Created new task definition revision $TASK_REVISION"
       
       # 3. Update the service
       - echo "Updating service..."
-      - DESIRED_COUNT=`aws ecs describe-services --services $SERVICE_NAME --cluster $CLUSTER_NAME | jq -r ".services[0].desiredCount"
+      - DESIRED_COUNT=`aws ecs describe-services --services $SERVICE_NAME --cluster $CLUSTER_NAME | jq -r ".services[0].desiredCount"`
       - >
         aws ecs update-service 
         --cluster $CLUSTER_NAME
@@ -36,7 +36,7 @@ phases:
         --desired-count $DESIRED_COUNT 
         --deployment-configuration "maximumPercent=200,minimumHealthyPercent=100,deploymentCircuitBreaker={enable=true,rollback=true}"
         --force-new-deployment
-      - echo "Service updated"
+      - echo "Service deployed"
       
   post_build:
     commands:
